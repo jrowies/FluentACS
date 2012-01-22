@@ -1,0 +1,9 @@
+
+*.user
+*.suo
+/_ReSharper.FluentACS
+/FluentACS/_ReSharper.FluentACS
+/FluentACS/bin
+/FluentACS/obj
+/FluentACSTest/bin
+/FluentACSTest/obj

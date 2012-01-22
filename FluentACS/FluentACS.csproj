@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7257F961-4BFD-4D2C-9521-A4C711C90476}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FluentACS</RootNamespace>
+    <AssemblyName>FluentACS</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.IdentityModel, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Services.Client" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AcsNamespace.cs" />
+    <Compile Include="AcsNamespaceDescription.cs" />
+    <Compile Include="Commands\AddIdentityProviderCommand.cs" />
+    <Compile Include="Commands\AddRelyingPartyCommand.cs" />
+    <Compile Include="Commands\AddRuleCommand.cs" />
+    <Compile Include="Commands\AddRuleGroupCommand.cs" />
+    <Compile Include="Commands\AddServiceIdentityCommand.cs" />
+    <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="ManagementService\Constants.cs" />
+    <Compile Include="ManagementService\EndpointType.cs" />
+    <Compile Include="ManagementService\IdentityKeyTypes.cs" />
+    <Compile Include="ManagementService\IdentityKeyUsages.cs" />
+    <Compile Include="ManagementService\KeyType.cs" />
+    <Compile Include="ManagementService\KeyUsage.cs" />
+    <Compile Include="ManagementService\RelyingPartyAddressEndpointType.cs" />
+    <Compile Include="ManagementService\RuleTypes.cs" />
+    <Compile Include="ManagementService\ServiceManagementException.cs" />
+    <Compile Include="ManagementService\ServiceManagementWrapper.cs" />
+    <Compile Include="ManagementService\SocialIdentityProvider.cs" />
+    <Compile Include="ManagementService\TokenType.cs" />
+    <Compile Include="ManagementService\WebSSOProtocolType.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service References\ManagementService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.datasvcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Specs\BaseSpec.cs" />
+    <Compile Include="Specs\GoogleIdentityProviderSpec.cs" />
+    <Compile Include="Specs\IdentityProviderSpec.cs" />
+    <Compile Include="Specs\IdentityProvidersSpec.cs" />
+    <Compile Include="Specs\RelyingPartiesSpec.cs" />
+    <Compile Include="Specs\RelyingPartySpec.cs" />
+    <Compile Include="Specs\RuleGroupSpec.cs" />
+    <Compile Include="Specs\Rules\Chaining\IAfterAndInputClaimTypeRuleSpec.cs" />
+    <Compile Include="Specs\Rules\Chaining\IAfterAndInputClaimValueRuleSpec.cs" />
+    <Compile Include="Specs\Rules\Chaining\IAfterAndOutputClaimValueRuleSpec.cs" />
+    <Compile Include="Specs\Rules\Chaining\IAfterDescription.cs" />
+    <Compile Include="Specs\Rules\Chaining\IAfterIfInputClaimIssuerRuleSpec.cs" />
+    <Compile Include="Specs\Rules\Chaining\IAfterThenOutputClaimTypeRuleSpec.cs" />
+    <Compile Include="Specs\Rules\Chaining\IStartRuleSpec.cs" />
+    <Compile Include="Specs\Rules\InputClaimIssuerSpec.cs" />
+    <Compile Include="Specs\Rules\InputClaimTypeSpec.cs" />
+    <Compile Include="Specs\Rules\InputClaimValueSpec.cs" />
+    <Compile Include="Specs\Rules\OutputClaimTypeSpec.cs" />
+    <Compile Include="Specs\Rules\OutputClaimValueSpec.cs" />
+    <Compile Include="Specs\Rules\RuleSpec.cs" />
+    <Compile Include="Specs\ServiceIdentitiesSpec.cs" />
+    <Compile Include="Specs\ServiceIdentitySpec.cs" />
+    <Compile Include="Specs\SigningCertificateSpec.cs" />
+    <Compile Include="Specs\YahooIdentityProviderSpec.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ServiceReferenceMetadataStorage Include="Service References\ManagementService\">
+      <Type>datasvcmap</Type>
+    </ServiceReferenceMetadataStorage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\ManagementService\service.edmx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\ManagementService\Reference.datasvcmap">
+      <Generator>DataServiceClientGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
