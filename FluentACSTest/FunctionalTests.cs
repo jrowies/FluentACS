@@ -1,6 +1,7 @@
 ﻿namespace FluentACSTest
 {
     using System;
+    using System.Configuration;
     using System.IO;
     using System.Security.Cryptography.X509Certificates;
 
@@ -15,10 +16,12 @@
         // TODO: 
         // agregar en los commands error handling
         // habilitar opcion "verbose"
-        // eliminar keys del relying party
+        // ext methods para assert?
 
-        private readonly AcsNamespaceDescription namespaceDesc = new AcsNamespaceDescription("acsnamespace", 
-            "ManagementClient", "S+QtqP21BbCLO/9D1hanRdKJF8ZYEV9t32odxP3pYw=");
+        private readonly AcsNamespaceDescription namespaceDesc = new AcsNamespaceDescription(
+            ConfigurationManager.AppSettings["acsNamespace"],
+            ConfigurationManager.AppSettings["acsUserName"],
+            ConfigurationManager.AppSettings["acsPassword"]);
 
         [TestMethod]
         public void AddGoogleAndYahooIdentityProviders()
@@ -65,20 +68,6 @@
             Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "Orders.Website"));
         }
 
-        public byte[] ReadBytesFromPfxFile(string pfxFileName)
-        {
-            byte[] signingCertificate;
-            using (var stream = File.OpenRead(pfxFileName))
-            {
-                using (var br = new BinaryReader(stream))
-                {
-                    signingCertificate = br.ReadBytes((int)stream.Length);
-                }
-            }
-
-            return signingCertificate;
-        }
-
         [TestMethod]
         public void AddOrdersWebsiteRelyingPartyWithSwtTokenDetails()
         {
@@ -97,6 +86,7 @@
             acsNamespace.SaveChanges();
 
             Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "Orders.Website"));
+            Assert.IsTrue(AcsHelper.CheckRelyingPartyHasKeys(this.namespaceDesc, "Orders.Website", 1));
         }
 
         [TestMethod]
@@ -124,6 +114,7 @@
             acsNamespace.SaveChanges();
 
             Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "Orders.Website"));
+            Assert.IsTrue(AcsHelper.CheckRelyingPartyHasKeys(this.namespaceDesc, "Orders.Website", 2));
         }
 
         [TestMethod]
@@ -224,6 +215,20 @@
             acsNamespace.SaveChanges();
 
             Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "Orders.Website"));
+        }
+
+        public byte[] ReadBytesFromPfxFile(string pfxFileName)
+        {
+            byte[] signingCertificate;
+            using (var stream = File.OpenRead(pfxFileName))
+            {
+                using (var br = new BinaryReader(stream))
+                {
+                    signingCertificate = br.ReadBytes((int)stream.Length);
+                }
+            }
+
+            return signingCertificate;
         }
     }
 }

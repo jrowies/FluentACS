@@ -14,6 +14,8 @@
 
         public AcsNamespace(AcsNamespaceDescription namespaceDesc)
         {
+            Guard.NotNull(() => namespaceDesc, namespaceDesc);
+
             this.namespaceDesc = namespaceDesc;
             this.commands = new List<ICommand>();
             this.IdentityProviders = new IdentityProvidersSpec(this.commands);
@@ -29,7 +31,7 @@
 
         public void SaveChanges()
         {
-            var managementWrapper = new ServiceManagementWrapper(this.namespaceDesc.AcsNamespace, this.namespaceDesc.AcsUserName, this.namespaceDesc.AcsPassword);
+            var managementWrapper = new ServiceManagementWrapper(this.namespaceDesc.Namespace, this.namespaceDesc.UserName, this.namespaceDesc.Password);
 
             foreach (var command in this.commands)
             {

@@ -13,6 +13,8 @@
 
         public AddRelyingPartyCommand(RelyingPartySpec relyingPartySpec)
         {
+            Guard.NotNull(() => relyingPartySpec, relyingPartySpec);
+
             this.relyingPartySpec = relyingPartySpec;
         }
 
@@ -26,18 +28,56 @@
             {
                 if (this.relyingPartySpec.ShouldRemoveRelatedRuleGroups())
                 {
+                    var pendingChanges = false;
+
                     foreach (var ruleGroup in rpToRemove.RelyingPartyRuleGroups)
                     {
                         RelyingPartyRuleGroup @group = ruleGroup;
-                        var rgToRemove = client.RuleGroups.Where(rg => rg.Name.Equals(group.RuleGroup.Name)).Single();
+                        var rgToRemove = client.RuleGroups.Where(
+                            rg => rg.Name.Equals(group.RuleGroup.Name)).Single();
                         client.DeleteObject(rgToRemove);
+
+                        pendingChanges = true;
+                    }
+
+                    if (pendingChanges)
+                    {
                         client.SaveChanges(SaveChangesOptions.Batch);
                     }
                 }
 
+                RemoveRelatedKeys(rpToRemove, client);
+
                 acsWrapper.RemoveRelyingParty(rpToRemove.Name);
             }
 
+            this.AddRelyingParty(acsWrapper);
+
+            this.LinkExistingRuleGroups(client);
+        }
+
+        private static void RemoveRelatedKeys(RelyingParty rpToRemove, ManagementService client)
+        {
+            var pendingChanges = false;
+
+            foreach (var key in rpToRemove.RelyingPartyKeys)
+            {
+                RelyingPartyKey keyLocal = key;
+                var keyToRemove = client.RelyingPartyKeys.Where(
+                    k => k.DisplayName.Equals(keyLocal.DisplayName)).Single();
+                client.DeleteObject(keyToRemove);
+
+                pendingChanges = true;
+            }
+
+            if (pendingChanges)
+            {
+                client.SaveChanges(SaveChangesOptions.Batch);
+            }
+        }
+
+        private void AddRelyingParty(ServiceManagementWrapper acsWrapper)
+        {
             var tokenLifetime = this.relyingPartySpec.TokenLifetime();
 
             byte[] signingCertBytes = null;
@@ -68,7 +108,10 @@
                 this.relyingPartySpec.EncryptionCertificate(),
                 string.Empty,
                 this.relyingPartySpec.AllowedIdentityProviders().ToArray());
+        }
 
+        private void LinkExistingRuleGroups(ManagementService client)
+        {
             foreach (var linkedRuleGroup in this.relyingPartySpec.LinkedRuleGroups())
             {
                 var @group = linkedRuleGroup;

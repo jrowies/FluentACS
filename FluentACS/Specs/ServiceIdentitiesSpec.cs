@@ -14,6 +14,8 @@
 
         public ServiceIdentitiesSpec Add(Action<ServiceIdentitySpec> configAction)
         {
+            Guard.NotNull(() => configAction, configAction);
+
             var spec = new ServiceIdentitySpec();
             configAction(spec);
 

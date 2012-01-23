@@ -2,17 +2,21 @@
 {
     public class AcsNamespaceDescription
     {
-        public AcsNamespaceDescription(string acsNamespace, string acsUserName, string acsPassword)
+        public AcsNamespaceDescription(string acsNamespace, string userName, string password)
         {
-            this.AcsNamespace = acsNamespace;
-            this.AcsUserName = acsUserName;
-            this.AcsPassword = acsPassword;
+            Guard.NotNullOrEmpty(() => acsNamespace, acsNamespace);
+            Guard.NotNullOrEmpty(() => userName, userName);
+            Guard.NotNullOrEmpty(() => password, password);
+
+            this.Namespace = acsNamespace;
+            this.UserName = userName;
+            this.Password = password;
         }
 
-        public string AcsNamespace { get; private set; }
+        public string Namespace { get; private set; }
 
-        public string AcsUserName { get; private set; }
+        public string UserName { get; private set; }
 
-        public string AcsPassword { get; private set; }
+        public string Password { get; private set; }
     }
 }

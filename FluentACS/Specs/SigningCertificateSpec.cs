@@ -14,12 +14,16 @@
 
         public SigningCertificateSpec Bytes(byte[] bytes)
         {
+            Guard.NotNull(() => bytes, bytes);
+
             this.bytes = bytes;
             return this;
         }
 
         public SigningCertificateSpec Password(string password)
         {
+            Guard.NotNullOrEmpty(() => password, password);
+
             this.password = password;
             return this;
         }

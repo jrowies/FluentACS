@@ -37,6 +37,8 @@
 
         public RelyingPartySpec AddRuleGroup(Action<RuleGroupSpec> configAction)
         {
+            Guard.NotNull(() => configAction, configAction);
+
             var cmds = new List<ICommand>();
             var spec = new RuleGroupSpec(cmds, this.Name());
             configAction(spec);
@@ -49,30 +51,40 @@
 
         public RelyingPartySpec AllowIdentityProvider(string identityProvider)
         {
+            Guard.NotNull(() => identityProvider, identityProvider);
+
             this.allowedIdentityProviders.Add(identityProvider);
             return this;
         }
 
         public RelyingPartySpec EncryptionCertificate(byte[] encryptionCert)
         {
+            Guard.NotNull(() => encryptionCert, encryptionCert);
+
             this.encryptionCert = encryptionCert;
             return this;
         }
 
         public RelyingPartySpec LinkToRuleGroup(string ruleGroupName)
         {
+            Guard.NotNullOrEmpty(() => ruleGroupName, ruleGroupName);
+
             this.linkedRuleGroups.Add(ruleGroupName);
             return this;
         }
 
         public RelyingPartySpec Name(string name)
         {
+            Guard.NotNullOrEmpty(() => name, name);
+
             this.name = name;
             return this;
         }
 
         public RelyingPartySpec RealmAddress(string realmAddress)
         {
+            Guard.NotNullOrEmpty(() => realmAddress, realmAddress);
+
             this.realmAddress = realmAddress;
             return this;
         }
@@ -85,6 +97,8 @@
 
         public RelyingPartySpec ReplyAddress(string replyAddress)
         {
+            Guard.NotNullOrEmpty(() => replyAddress, replyAddress);
+
             this.replyAddress = replyAddress;
             return this;
         }
@@ -97,6 +111,8 @@
 
         public RelyingPartySpec SigningCertificate(Action<SigningCertificateSpec> configAction)
         {
+            Guard.NotNull(() => configAction, configAction);
+
             this.signingCert = new SigningCertificateSpec();
             configAction(this.signingCert);
             return this;
@@ -110,6 +126,8 @@
 
         public RelyingPartySpec SymmetricKey(byte[] symmetricKey)
         {
+            Guard.NotNull(() => symmetricKey, symmetricKey);
+
             this.symmetricKey = symmetricKey;
             return this;
         }

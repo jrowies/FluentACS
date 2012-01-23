@@ -11,6 +11,8 @@
 
         public AddIdentityProviderCommand(IdentityProviderSpec identityProviderSpec)
         {
+            Guard.NotNull(() => identityProviderSpec, identityProviderSpec);
+
             this.identityProviderSpec = identityProviderSpec;
         }
 

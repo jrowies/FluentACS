@@ -11,6 +11,8 @@
 
         public AddServiceIdentityCommand(ServiceIdentitySpec serviceIdentitySpec)
         {
+            Guard.NotNull(() => serviceIdentitySpec, serviceIdentitySpec);
+
             this.serviceIdentitySpec = serviceIdentitySpec;
         }
 

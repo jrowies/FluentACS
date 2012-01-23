@@ -17,12 +17,16 @@
 
         public RuleGroupSpec(List<ICommand> commands, string relyingPartyName)
         {
+            Guard.NotNullOrEmpty(() => relyingPartyName, relyingPartyName);
+
             this.commands = commands;
             this.relyingPartyName = relyingPartyName;
         }
 
         public RuleGroupSpec AddRule(Action<IStartRuleSpec> configAction)
         {
+            Guard.NotNull(() => configAction, configAction);
+
             var spec = new RuleSpec(this.Name());
             configAction(spec);
 
@@ -33,6 +37,8 @@
 
         public RuleGroupSpec Name(string name)
         {
+            Guard.NotNullOrEmpty(() => name, name);
+
             this.name = name;
             return this;
         }

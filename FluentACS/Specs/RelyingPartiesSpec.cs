@@ -14,6 +14,8 @@
 
         public RelyingPartiesSpec Add(Action<RelyingPartySpec> configAction)
         {
+            Guard.NotNull(() => configAction, configAction);
+
             var cmds = new List<ICommand>();
             var spec = new RelyingPartySpec(cmds);
             configAction(spec);

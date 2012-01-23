@@ -9,6 +9,8 @@
 
         public AddRuleCommand(RuleSpec ruleSpec)
         {
+            Guard.NotNull(() => ruleSpec, ruleSpec);
+
             this.ruleSpec = ruleSpec;
         }
 

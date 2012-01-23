@@ -8,12 +8,16 @@
 
         public ServiceIdentitySpec Name(string name)
         {
+            Guard.NotNullOrEmpty(() => name, name);
+
             this.name = name;
             return this;
         }
 
         public ServiceIdentitySpec Password(string password)
         {
+            Guard.NotNullOrEmpty(() => password, password);
+
             this.password = password;
             return this;
         }

@@ -12,6 +12,8 @@
 
         public AddRuleGroupCommand(RuleGroupSpec ruleGroupSpec)
         {
+            Guard.NotNull(() => ruleGroupSpec, ruleGroupSpec);
+
             this.ruleGroupSpec = ruleGroupSpec;
         }
 
@@ -24,9 +26,8 @@
             if (ruleGroup != null)
             {
                 client.DeleteObject(ruleGroup);
+                client.SaveChanges(SaveChangesOptions.Batch);
             }
-
-            client.SaveChanges(SaveChangesOptions.Batch);
 
             acsWrapper.AddRuleGroup(this.ruleGroupSpec.Name());
             ruleGroup = client.RuleGroups.Where(rg => rg.Name.Equals(this.ruleGroupSpec.Name())).FirstOrDefault();

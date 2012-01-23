@@ -6,6 +6,8 @@
 
         public void DisplayName(string name)
         {
+            Guard.NotNullOrEmpty(() => name, name);
+
             this.displayName = name;
         }
 
