@@ -51,7 +51,10 @@
     <Compile Include="Commands\AddRuleCommand.cs" />
     <Compile Include="Commands\AddRuleGroupCommand.cs" />
     <Compile Include="Commands\AddServiceIdentityCommand.cs" />
+    <Compile Include="Commands\BaseCommand.cs" />
     <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Logging\LogInfo.cs" />
+    <Compile Include="Logging\LogInfoTypeEnum.cs" />
     <Compile Include="ManagementService\Constants.cs" />
     <Compile Include="ManagementService\EndpointType.cs" />
     <Compile Include="ManagementService\IdentityKeyTypes.cs" />
@@ -74,9 +77,8 @@
     </Compile>
     <Compile Include="Specs\BaseSpec.cs" />
     <Compile Include="Specs\GoogleIdentityProviderSpec.cs" />
+    <Compile Include="Specs\IdentityProviderConsts.cs" />
     <Compile Include="Specs\IdentityProviderSpec.cs" />
-    <Compile Include="Specs\IdentityProvidersSpec.cs" />
-    <Compile Include="Specs\RelyingPartiesSpec.cs" />
     <Compile Include="Specs\RelyingPartySpec.cs" />
     <Compile Include="Specs\RuleGroupSpec.cs" />
     <Compile Include="Specs\Rules\Chaining\IAfterAndInputClaimTypeRuleSpec.cs" />
@@ -92,7 +94,6 @@
     <Compile Include="Specs\Rules\OutputClaimTypeSpec.cs" />
     <Compile Include="Specs\Rules\OutputClaimValueSpec.cs" />
     <Compile Include="Specs\Rules\RuleSpec.cs" />
-    <Compile Include="Specs\ServiceIdentitiesSpec.cs" />
     <Compile Include="Specs\ServiceIdentitySpec.cs" />
     <Compile Include="Specs\SigningCertificateSpec.cs" />
     <Compile Include="Specs\YahooIdentityProviderSpec.cs" />

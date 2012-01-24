@@ -57,6 +57,24 @@
             return this;
         }
 
+        public RelyingPartySpec AllowGoogleIdentityProvider()
+        {
+            this.allowedIdentityProviders.Add(IdentityProviderConsts.Google);
+            return this;
+        }
+
+        public RelyingPartySpec AllowYahooIdentityProvider()
+        {
+            this.allowedIdentityProviders.Add(IdentityProviderConsts.Yahoo);
+            return this;
+        }
+
+        public RelyingPartySpec AllowWindowsLiveIdentityProvider()
+        {
+            this.allowedIdentityProviders.Add(IdentityProviderConsts.WindowsLive);
+            return this;
+        }
+
         public RelyingPartySpec EncryptionCertificate(byte[] encryptionCert)
         {
             Guard.NotNull(() => encryptionCert, encryptionCert);

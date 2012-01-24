@@ -4,6 +4,7 @@
     using System.Collections.Generic;
 
     using FluentACS.Commands;
+    using FluentACS.Logging;
     using FluentACS.ManagementService;
     using FluentACS.Specs;
 
@@ -19,27 +20,92 @@
 
             this.namespaceDesc = namespaceDesc;
             this.commands = new List<ICommand>();
-            this.IdentityProviders = new IdentityProvidersSpec(this.commands);
-            this.ServiceIdentities = new ServiceIdentitiesSpec(this.commands);
-            this.RelyingParties = new RelyingPartiesSpec(this.commands);
         }
 
-        public IdentityProvidersSpec IdentityProviders { get; private set; }
+        public AcsNamespace AddGoogleIdentityProvider()
+        {
+            this.commands.Add(new AddIdentityProviderCommand(new GoogleIdentityProviderSpec()));
+            return this;
+        }
 
-        public ServiceIdentitiesSpec ServiceIdentities { get; private set; }
+        public AcsNamespace AddYahooIdentityProvider()
+        {
+            this.commands.Add(new AddIdentityProviderCommand(new YahooIdentityProviderSpec()));
+            return this;
+        }
 
-        public RelyingPartiesSpec RelyingParties { get; private set; }
+        public AcsNamespace AddServiceIdentity(Action<ServiceIdentitySpec> configAction)
+        {
+            Guard.NotNull(() => configAction, configAction);
+
+            var spec = new ServiceIdentitySpec();
+            configAction(spec);
+
+            this.commands.Add(new AddServiceIdentityCommand(spec));
+
+            return this;
+        }
+
+        public AcsNamespace AddRelyingParty(Action<RelyingPartySpec> configAction)
+        {
+            Guard.NotNull(() => configAction, configAction);
+
+            var cmds = new List<ICommand>();
+            var spec = new RelyingPartySpec(cmds);
+            configAction(spec);
+
+            this.commands.Add(new AddRelyingPartyCommand(spec));
+            this.commands.AddRange(cmds);
+
+            return this;
+        }
+
+        public void SaveChanges(Action<LogInfo> logAction)
+        {
+            try
+            {
+                var managementWrapper = new ServiceManagementWrapper(this.namespaceDesc.Namespace, this.namespaceDesc.UserName, this.namespaceDesc.Password);
+
+                CheckConnection(managementWrapper);
+
+                foreach (var command in this.commands)
+                {
+                    try
+                    {
+                        command.Execute(managementWrapper, logAction);
+                    }
+                    catch (Exception ex1)
+                    {
+                        if (!LogException(logAction, LogInfoTypeEnum.Error, ex1))
+                        {
+                            throw;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex2)
+            {
+                if (!LogException(logAction, LogInfoTypeEnum.FatalError, ex2))
+                {
+                    throw;
+                }
+            }
+        }
+
+        private static bool LogException(Action<LogInfo> logAction, LogInfoTypeEnum logInfoType, Exception exception)
+        {
+            if (logAction != null)
+            {
+                logAction(new LogInfo { LogInfoType = LogInfoTypeEnum.Error, Exception = exception });
+                return true;
+            }
+
+            return false;
+        }
 
         public void SaveChanges()
         {
-            var managementWrapper = new ServiceManagementWrapper(this.namespaceDesc.Namespace, this.namespaceDesc.UserName, this.namespaceDesc.Password);
-
-            CheckConnection(managementWrapper);
-
-            foreach (var command in this.commands)
-            {
-                command.Execute(managementWrapper);
-            }
+            this.SaveChanges(null);
         }
 
         private static void CheckConnection(ServiceManagementWrapper managementWrapper)

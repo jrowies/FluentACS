@@ -4,7 +4,7 @@
     {
         public GoogleIdentityProviderSpec()
         {
-            this.DisplayName("Google");
+            this.DisplayName(IdentityProviderConsts.Google);
         }
     }
 }

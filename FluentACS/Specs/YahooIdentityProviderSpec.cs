@@ -4,7 +4,7 @@
     {
         public YahooIdentityProviderSpec()
         {
-            this.DisplayName("Yahoo!");
+            this.DisplayName(IdentityProviderConsts.Yahoo);
         }
     }
 }

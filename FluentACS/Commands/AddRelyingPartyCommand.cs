@@ -4,10 +4,11 @@
     using System.Data.Services.Client;
     using System.Linq;
 
+    using FluentACS.Logging;
     using FluentACS.ManagementService;
     using FluentACS.Specs;
 
-    public class AddRelyingPartyCommand : ICommand
+    public class AddRelyingPartyCommand : BaseCommand
     {
         private readonly RelyingPartySpec relyingPartySpec;
 
@@ -18,7 +19,7 @@
             this.relyingPartySpec = relyingPartySpec;
         }
 
-        public void Execute(object receiver)
+        public override void Execute(object receiver, Action<LogInfo> logAction)
         {
             var acsWrapper = (ServiceManagementWrapper)receiver;
             var client = acsWrapper.CreateManagementServiceClient();
@@ -32,6 +33,7 @@
 
                     foreach (var ruleGroup in rpToRemove.RelyingPartyRuleGroups)
                     {
+                        this.LogMessage(logAction, string.Format("Removing Rule Group '{0}'", ruleGroup.RuleGroup.Name));
                         RemoveRuleGroup(client, ruleGroup.RuleGroup.Name);
 
                         pendingChanges = true;
@@ -40,17 +42,20 @@
                     if (pendingChanges)
                     {
                         client.SaveChanges(SaveChangesOptions.Batch);
+                        this.LogSavingChangesMessage(logAction);
                     }
                 }
 
-                RemoveRelatedKeys(rpToRemove, client);
+                this.RemoveRelatedKeys(rpToRemove, client, logAction);
 
+                this.LogMessage(logAction, string.Format("Removing Relying Party '{0}'", rpToRemove.Name));
                 acsWrapper.RemoveRelyingParty(rpToRemove.Name);
+                this.LogSavingChangesMessage(logAction);
             }
 
-            this.AddRelyingParty(acsWrapper);
+            this.AddRelyingParty(acsWrapper, logAction);
 
-            this.LinkExistingRuleGroups(client);
+            this.LinkExistingRuleGroups(client, logAction);
         }
 
         private static void RemoveRuleGroup(ManagementService managementService, string ruleGroupName)
@@ -63,7 +68,7 @@
             managementService.DeleteObject(rgToRemove);
         }
 
-        private static void RemoveRelatedKeys(RelyingParty rpToRemove, ManagementService client)
+        private void RemoveRelatedKeys(RelyingParty rpToRemove, ManagementService client, Action<LogInfo> logAction)
         {
             var pendingChanges = false;
 
@@ -72,6 +77,8 @@
                 RelyingPartyKey keyLocal = key;
                 var keyToRemove = client.RelyingPartyKeys.Where(
                     k => k.DisplayName.Equals(keyLocal.DisplayName)).Single();
+
+                this.LogMessage(logAction, string.Format("Removing Key '{0}'", keyLocal.DisplayName));
                 client.DeleteObject(keyToRemove);
 
                 pendingChanges = true;
@@ -80,10 +87,11 @@
             if (pendingChanges)
             {
                 client.SaveChanges(SaveChangesOptions.Batch);
+                this.LogSavingChangesMessage(logAction);
             }
         }
 
-        private void AddRelyingParty(ServiceManagementWrapper acsWrapper)
+        private void AddRelyingParty(ServiceManagementWrapper acsWrapper, Action<LogInfo> logAction)
         {
             var tokenLifetime = this.relyingPartySpec.TokenLifetime();
 
@@ -101,6 +109,7 @@
                 signingCertEndDate = signingCert.EndDate();
             }
 
+            this.LogMessage(logAction, string.Format("Adding Relying Party '{0}'", this.relyingPartySpec.Name()));
             acsWrapper.AddRelyingPartyWithKey(
                 this.relyingPartySpec.Name(),
                 this.relyingPartySpec.RealmAddress(),
@@ -115,9 +124,10 @@
                 this.relyingPartySpec.EncryptionCertificate(),
                 string.Empty,
                 this.relyingPartySpec.AllowedIdentityProviders().ToArray());
+            this.LogSavingChangesMessage(logAction);
         }
 
-        private void LinkExistingRuleGroups(ManagementService client)
+        private void LinkExistingRuleGroups(ManagementService client, Action<LogInfo> logAction)
         {
             foreach (var linkedRuleGroup in this.relyingPartySpec.LinkedRuleGroups())
             {
@@ -132,12 +142,14 @@
                     RelyingParty = relyingParty
                 };
 
+                this.LogMessage(logAction, string.Format("Linking Relying Party '{0}' to Rule Group '{1}'", this.relyingPartySpec.Name(), linkedRuleGroup));
                 client.AddRelatedObject(relyingParty, "RelyingPartyRuleGroups", relyingPartyRuleGroup);
             }
 
             if (this.relyingPartySpec.LinkedRuleGroups().Any())
             {
                 client.SaveChanges(SaveChangesOptions.Batch);
+                this.LogSavingChangesMessage(logAction);
             }
         }
     }

@@ -9,3 +9,7 @@
 /FluentACSTest/obj
 /FluentACSTest/App.config.private
 /FluentACSTest/App.config.repo
+/SampleApp/bin
+/SampleApp/obj
+/SampleApp/app.config.private
+/SampleApp/app.config.repo

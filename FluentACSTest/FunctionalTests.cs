@@ -13,11 +13,6 @@
     [TestClass]
     public class FunctionalTests
     {
-        // TODO: 
-        // agregar en los commands error handling
-        // habilitar opcion "verbose"
-        // ext methods para assert?
-
         private readonly AcsNamespaceDescription namespaceDesc = new AcsNamespaceDescription(
             ConfigurationManager.AppSettings["acsNamespace"],
             ConfigurationManager.AppSettings["acsUserName"],
@@ -27,9 +22,9 @@
         public void AddGoogleAndYahooIdentityProviders()
         {
             var acsNamespace = new AcsNamespace(this.namespaceDesc);
-            acsNamespace.IdentityProviders
-                .AddGoogle()
-                .AddYahoo();
+            acsNamespace
+                .AddGoogleIdentityProvider()
+                .AddYahooIdentityProvider();
 
             acsNamespace.SaveChanges();
 
@@ -38,59 +33,59 @@
         }
 
         [TestMethod]
-        public void AddManInAVanServiceIdentity()
+        public void AddVandelayIndustriesServiceIdentity()
         {
             var acsNamespace = new AcsNamespace(this.namespaceDesc);
-            acsNamespace.ServiceIdentities.Add(
+            acsNamespace.AddServiceIdentity(
                 si => si
-                    .Name("Man in a Van")
+                    .Name("Vandelay Industries")
                     .Password("Passw0rd!"));
 
             acsNamespace.SaveChanges();
 
-            Assert.IsTrue(AcsHelper.CheckServiceIdentityExists(this.namespaceDesc, "Man in a Van"));
+            Assert.IsTrue(AcsHelper.CheckServiceIdentityExists(this.namespaceDesc, "Vandelay Industries"));
         }
 
         [TestMethod]
-        public void AddOrdersWebsiteRelyingParty()
+        public void AddMyCoolWebsiteRelyingParty()
         {
             var acsNamespace = new AcsNamespace(this.namespaceDesc);
-            acsNamespace.RelyingParties.Add(
+            acsNamespace.AddRelyingParty(
                 rp => rp
-                    .Name("Orders.Website")
-                    .RealmAddress("http://127.0.0.1/")
-                    .ReplyAddress("http://127.0.0.1/")
-                    .AllowIdentityProvider("Google")
-                    .AllowIdentityProvider("Windows Live ID"));
+                    .Name("MyCoolWebsite")
+                    .RealmAddress("http://mycoolwebsite.com/")
+                    .ReplyAddress("http://mycoolwebsite.com/")
+                    .AllowGoogleIdentityProvider()
+                    .AllowWindowsLiveIdentityProvider());
 
             acsNamespace.SaveChanges();
 
-            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "Orders.Website"));
+            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "MyCoolWebsite"));
         }
 
         [TestMethod]
-        public void AddOrdersWebsiteRelyingPartyWithSwtTokenDetails()
+        public void AddMyCoolWebsiteRelyingPartyWithSwtTokenDetails()
         {
             var acsNamespace = new AcsNamespace(this.namespaceDesc);
-            acsNamespace.RelyingParties.Add(
+            acsNamespace.AddRelyingParty(
                 rp => rp
-                    .Name("Orders.Website")
-                    .RealmAddress("http://127.0.0.1/")
-                    .ReplyAddress("http://127.0.0.1/")
-                    .AllowIdentityProvider("Google")
-                    .AllowIdentityProvider("Windows Live ID")
+                    .Name("MyCoolWebsite")
+                    .RealmAddress("http://mycoolwebsite.com/")
+                    .ReplyAddress("http://mycoolwebsite.com/")
+                    .AllowGoogleIdentityProvider()
+                    .AllowWindowsLiveIdentityProvider()
                     .SwtToken()
                     .TokenLifetime(120)
                     .SymmetricKey(Convert.FromBase64String("yMryA5VQVmMwrtuiJBfyjMnAJwoT7//fCuM6NwaHjQ1=")));
 
             acsNamespace.SaveChanges();
 
-            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "Orders.Website"));
-            Assert.IsTrue(AcsHelper.CheckRelyingPartyHasKeys(this.namespaceDesc, "Orders.Website", 1));
+            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "MyCoolWebsite"));
+            Assert.IsTrue(AcsHelper.CheckRelyingPartyHasKeys(this.namespaceDesc, "MyCoolWebsite", 1));
         }
 
         [TestMethod]
-        public void AddOrdersWebsiteRelyingPartyWithSamlTokenDetails()
+        public void AddMyCoolWebsiteRelyingPartyWithSamlTokenDetails()
         {
             var encryptionCert = new X509Certificate(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testCert.cer"));
             var signingCertBytes = this.ReadBytesFromPfxFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testCert_xyz.pfx"));
@@ -99,13 +94,13 @@
             var endDate = temp.NotAfter.ToUniversalTime();
 
             var acsNamespace = new AcsNamespace(this.namespaceDesc);
-            acsNamespace.RelyingParties.Add(
+            acsNamespace.AddRelyingParty(
                 rp => rp
-                    .Name("Orders.Website")
-                    .RealmAddress("http://127.0.0.1/")
-                    .ReplyAddress("http://127.0.0.1/")
-                    .AllowIdentityProvider("Google")
-                    .AllowIdentityProvider("Windows Live ID")
+                    .Name("MyCoolWebsite")
+                    .RealmAddress("http://mycoolwebsite.com/")
+                    .ReplyAddress("http://mycoolwebsite.com/")
+                    .AllowGoogleIdentityProvider()
+                    .AllowWindowsLiveIdentityProvider()
                     .SamlToken()
                     .TokenLifetime(120)
                     .SigningCertificate(sc => sc.Bytes(signingCertBytes).Password("xyz").StartDate(startDate).EndDate(endDate)) 
@@ -113,45 +108,49 @@
 
             acsNamespace.SaveChanges();
 
-            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "Orders.Website"));
-            Assert.IsTrue(AcsHelper.CheckRelyingPartyHasKeys(this.namespaceDesc, "Orders.Website", 2));
+            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "MyCoolWebsite"));
+            Assert.IsTrue(AcsHelper.CheckRelyingPartyHasKeys(this.namespaceDesc, "MyCoolWebsite", 2));
         }
 
         [TestMethod]
-        public void AddOrdersWebsiteRelyingPartyWithRuleGroup()
+        public void AddMyCoolWebsiteRelyingPartyWithRuleGroup()
         {
             var acsNamespace = new AcsNamespace(this.namespaceDesc);
-            acsNamespace.RelyingParties.Add(
+            acsNamespace.AddRelyingParty(
                 rp => rp
-                    .Name("Orders.Website")
-                    .RealmAddress("http://127.0.0.1/")
-                    .ReplyAddress("http://127.0.0.1/")
-                    .AllowIdentityProvider("Google")
-                    .AllowIdentityProvider("Windows Live ID")
+                    .Name("MyCoolWebsite")
+                    .RealmAddress("http://mycoolwebsite.com/")
+                    .ReplyAddress("http://mycoolwebsite.com/")
+                    .AllowGoogleIdentityProvider()
+                    .AllowWindowsLiveIdentityProvider()
                     .RemoveRelatedRuleGroups()
-                    .AddRuleGroup(rg => rg.Name("Rule Group for Orders.Website Relying Party")));
+                    .AddRuleGroup(rg => rg.Name("Rule Group for MyCoolWebsite Relying Party")));
 
             acsNamespace.SaveChanges();
 
-            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "Orders.Website"));
-            Assert.IsTrue(AcsHelper.CheckRuleGroupExists(this.namespaceDesc, "Orders.Website", "Rule Group for Orders.Website Relying Party"));
+            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "MyCoolWebsite"));
+            Assert.IsTrue(AcsHelper.CheckRuleGroupExists(this.namespaceDesc, "MyCoolWebsite", "Rule Group for MyCoolWebsite Relying Party"));
         }
 
         [TestMethod]
-        public void AddOrdersWebsiteRelyingPartyWithRuleGroupAndRules()
+        public void AddMyCoolWebsiteRelyingPartyWithRuleGroupAndRules()
         {
             var acsNamespace = new AcsNamespace(this.namespaceDesc);
-            acsNamespace.RelyingParties.Add(
+            
+            const string MyCoolWebsite = "MyCoolWebsite";
+            const string RuleGroupForMyCoolWebsiteRelyingParty = "Rule Group for MyCoolWebsite Relying Party";
+
+            acsNamespace.AddRelyingParty(
                 rp => rp
-                    .Name("Orders.Website")
-                    .RealmAddress("http://127.0.0.1/")
-                    .ReplyAddress("http://127.0.0.1/")
-                    .AllowIdentityProvider("Google")
-                    .AllowIdentityProvider("Yahoo!")
-                    .AllowIdentityProvider("Windows Live ID")
+                    .Name(MyCoolWebsite)
+                    .RealmAddress("http://mycoolwebsite.com/")
+                    .ReplyAddress("http://mycoolwebsite.com/")
+                    .AllowGoogleIdentityProvider()
+                    .AllowYahooIdentityProvider()
+                    .AllowWindowsLiveIdentityProvider()
                     .RemoveRelatedRuleGroups()
                     .AddRuleGroup(rg => rg
-                                .Name("Rule Group for Orders.Website Relying Party")
+                                .Name(RuleGroupForMyCoolWebsiteRelyingParty)
                                 .AddRule(
                                     rule => rule
                                         .Description("Google Passthrough")
@@ -187,34 +186,34 @@
 
             acsNamespace.SaveChanges();
 
-            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "Orders.Website"));
-            Assert.IsTrue(AcsHelper.CheckRuleGroupExists(this.namespaceDesc, "Orders.Website", "Rule Group for Orders.Website Relying Party"));
-            Assert.IsTrue(AcsHelper.CheckRuleGroupHasRules(this.namespaceDesc, "Orders.Website", "Rule Group for Orders.Website Relying Party", 4));
-            Assert.IsTrue(AcsHelper.CheckRuleGroupHasRule(this.namespaceDesc, "Orders.Website", 
-                "Rule Group for Orders.Website Relying Party", "Google Passthrough"));
-            Assert.IsTrue(AcsHelper.CheckRuleGroupHasRule(this.namespaceDesc, "Orders.Website", 
-                "Rule Group for Orders.Website Relying Party", "Yahoo! Passthrough"));
-            Assert.IsTrue(AcsHelper.CheckRuleGroupHasRule(this.namespaceDesc, "Orders.Website", 
-                "Rule Group for Orders.Website Relying Party", "Windows Live ID rule"));
-            Assert.IsTrue(AcsHelper.CheckRuleGroupHasRule(this.namespaceDesc, "Orders.Website", 
-                "Rule Group for Orders.Website Relying Party", "ACS rule"));
+            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, MyCoolWebsite));
+            Assert.IsTrue(AcsHelper.CheckRuleGroupExists(this.namespaceDesc, MyCoolWebsite, RuleGroupForMyCoolWebsiteRelyingParty));
+            Assert.IsTrue(AcsHelper.CheckRuleGroupHasRules(this.namespaceDesc, MyCoolWebsite, RuleGroupForMyCoolWebsiteRelyingParty, 4));
+            Assert.IsTrue(AcsHelper.CheckRuleGroupHasRule(this.namespaceDesc, MyCoolWebsite, 
+                RuleGroupForMyCoolWebsiteRelyingParty, "Google Passthrough"));
+            Assert.IsTrue(AcsHelper.CheckRuleGroupHasRule(this.namespaceDesc, MyCoolWebsite, 
+                RuleGroupForMyCoolWebsiteRelyingParty, "Yahoo! Passthrough"));
+            Assert.IsTrue(AcsHelper.CheckRuleGroupHasRule(this.namespaceDesc, MyCoolWebsite, 
+                RuleGroupForMyCoolWebsiteRelyingParty, "Windows Live ID rule"));
+            Assert.IsTrue(AcsHelper.CheckRuleGroupHasRule(this.namespaceDesc, MyCoolWebsite, 
+                RuleGroupForMyCoolWebsiteRelyingParty, "ACS rule"));
         }
 
         [TestMethod]
-        public void AddOrdersWebsiteLinkedToExistingRuleGroup()
+        public void AddMyCoolWebsiteLinkedToExistingRuleGroup()
         {
             var acsNamespace = new AcsNamespace(this.namespaceDesc);
-            acsNamespace.RelyingParties.Add(
+            acsNamespace.AddRelyingParty(
                 rp => rp
-                    .Name("Orders.Website")
-                    .RealmAddress("http://127.0.0.1/")
-                    .ReplyAddress("http://127.0.0.1/")
-                    .AllowIdentityProvider("Google")
-                    .LinkToRuleGroup("Default Rule Group for Trey Research order acknowledgement for Man in a Van"));
+                    .Name("MyCoolWebsite")
+                    .RealmAddress("http://mycoolwebsite.com/")
+                    .ReplyAddress("http://mycoolwebsite.com/")
+                    .AllowGoogleIdentityProvider()
+                    .LinkToRuleGroup("Rule Group for MyCoolWebsite Relying Party"));
 
             acsNamespace.SaveChanges();
 
-            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "Orders.Website"));
+            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "MyCoolWebsite"));
         }
 
         public byte[] ReadBytesFromPfxFile(string pfxFileName)
