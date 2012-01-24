@@ -30,15 +30,22 @@
             }
 
             acsWrapper.AddRuleGroup(this.ruleGroupSpec.Name());
-            ruleGroup = client.RuleGroups.Where(rg => rg.Name.Equals(this.ruleGroupSpec.Name())).FirstOrDefault();
 
+            ruleGroup = client.RuleGroups.Where(rg => rg.Name.Equals(this.ruleGroupSpec.Name())).FirstOrDefault();
             var relyingParty = client.RelyingParties.Where(rp => rp.Name.Equals(this.ruleGroupSpec.RelyingPartyName())).FirstOrDefault();
+            LinkRuleGroupToRelyingParty(client, ruleGroup, relyingParty);
+        }
+
+        private static void LinkRuleGroupToRelyingParty(ManagementService client, RuleGroup ruleGroup, RelyingParty relyingParty)
+        {
+            Guard.NotNull(() => ruleGroup, ruleGroup);
+            Guard.NotNull(() => relyingParty, relyingParty);
 
             var relyingPartyRuleGroup = new RelyingPartyRuleGroup
-            {
-                RuleGroupId = ruleGroup.Id,
-                RelyingParty = relyingParty
-            };
+                {
+                    RuleGroupId = ruleGroup.Id,
+                    RelyingParty = relyingParty
+                };
 
             client.AddRelatedObject(relyingParty, "RelyingPartyRuleGroups", relyingPartyRuleGroup);
             client.SaveChanges(SaveChangesOptions.Batch);

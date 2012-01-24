@@ -32,10 +32,7 @@
 
                     foreach (var ruleGroup in rpToRemove.RelyingPartyRuleGroups)
                     {
-                        RelyingPartyRuleGroup @group = ruleGroup;
-                        var rgToRemove = client.RuleGroups.Where(
-                            rg => rg.Name.Equals(group.RuleGroup.Name)).Single();
-                        client.DeleteObject(rgToRemove);
+                        RemoveRuleGroup(client, ruleGroup.RuleGroup.Name);
 
                         pendingChanges = true;
                     }
@@ -54,6 +51,16 @@
             this.AddRelyingParty(acsWrapper);
 
             this.LinkExistingRuleGroups(client);
+        }
+
+        private static void RemoveRuleGroup(ManagementService managementService, string ruleGroupName)
+        {
+            Guard.NotNullOrEmpty(() => ruleGroupName, ruleGroupName);
+
+            var rgToRemove = managementService.RuleGroups.Where(
+                rg => rg.Name.Equals(ruleGroupName)).Single();
+
+            managementService.DeleteObject(rgToRemove);
         }
 
         private static void RemoveRelatedKeys(RelyingParty rpToRemove, ManagementService client)

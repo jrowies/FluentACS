@@ -1,5 +1,6 @@
 ﻿namespace FluentACS
 {
+    using System;
     using System.Collections.Generic;
 
     using FluentACS.Commands;
@@ -33,9 +34,24 @@
         {
             var managementWrapper = new ServiceManagementWrapper(this.namespaceDesc.Namespace, this.namespaceDesc.UserName, this.namespaceDesc.Password);
 
+            CheckConnection(managementWrapper);
+
             foreach (var command in this.commands)
             {
                 command.Execute(managementWrapper);
+            }
+        }
+
+        private static void CheckConnection(ServiceManagementWrapper managementWrapper)
+        {
+            try
+            {
+                managementWrapper.GetTokenFromACS();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("A token could not be retrieved from ACS, there might be connection problems or errors in the configuration." + 
+                    Environment.NewLine + "Please check the namespace, username and password provided.", ex);
             }
         }
     }
