@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>FluentACS</id>
+    <version>1.0.0</version>
+    <authors>Jorge Rowies</authors>
+    <owners>Jorge Rowies</owners>
+    <licenseUrl>https://github.com/jrowies/FluentACS/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/jrowies/FluentACS</projectUrl>
+    <!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Fluent API for setting up Windows Azure Access Control Service (ACS)</description>
+    <releaseNotes>First version of the API</releaseNotes>
+    <copyright>Copyright 2012</copyright>
+    <tags>Azure ACS Access Control Service</tags>
+    <dependencies>
+      <!--<dependency id="SampleDependency" version="1.0" />-->
+    </dependencies>
+  </metadata>
+</package>

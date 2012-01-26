@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>FluentACS.Samples</id>
+    <version>1.0.0</version>
+    <authors>Jorge Rowies</authors>
+    <owners>Jorge Rowies</owners>
+    <licenseUrl>https://github.com/jrowies/FluentACS/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/jrowies/FluentACS</projectUrl>
+    <!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Samples showing how to use the FluentACS API</description>
+    <releaseNotes>First version of the API</releaseNotes>
+    <copyright>Copyright 2012</copyright>
+    <tags>Azure ACS Samples Access Control Service</tags>
+    <dependencies>
+      <dependency id="FluentACS" version="1.0" />
+    </dependencies>
+  </metadata>
+</package>

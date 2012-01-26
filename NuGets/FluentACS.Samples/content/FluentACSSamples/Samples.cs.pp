@@ -1,24 +1,16 @@
-﻿namespace FluentACSTest
+﻿namespace $rootnamespace$.FluentACSSamples
 {
     using System;
-    using System.Configuration;
+    using System.Diagnostics;
     using System.IO;
     using System.Security.Cryptography.X509Certificates;
 
     using FluentACS;
 
-    using Microsoft.IdentityModel.Claims;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-    [TestClass]
-    public class FunctionalTests
+    public class Samples
     {
-        private readonly AcsNamespaceDescription namespaceDesc = new AcsNamespaceDescription(
-            ConfigurationManager.AppSettings["acsNamespace"],
-            ConfigurationManager.AppSettings["acsUserName"],
-            ConfigurationManager.AppSettings["acsPassword"]);
+        private readonly AcsNamespaceDescription namespaceDesc = new AcsNamespaceDescription("acsNamespace", "acsUserName", "acsPassword");
 
-        [TestMethod]
         public void AddGoogleAndYahooIdentityProviders()
         {
             var acsNamespace = new AcsNamespace(this.namespaceDesc);
@@ -26,13 +18,9 @@
                 .AddGoogleIdentityProvider()
                 .AddYahooIdentityProvider();
 
-            acsNamespace.SaveChanges();
-
-            Assert.IsTrue(AcsHelper.CheckIdentityProviderExists(this.namespaceDesc, "Google"));
-            Assert.IsTrue(AcsHelper.CheckIdentityProviderExists(this.namespaceDesc, "Yahoo!"));
+            acsNamespace.SaveChanges(logInfo => Trace.WriteLine(logInfo.Message));
         }
 
-        [TestMethod]
         public void AddVandelayIndustriesServiceIdentity()
         {
             var acsNamespace = new AcsNamespace(this.namespaceDesc);
@@ -41,29 +29,9 @@
                     .Name("Vandelay Industries")
                     .Password("Passw0rd!"));
 
-            acsNamespace.SaveChanges();
-
-            Assert.IsTrue(AcsHelper.CheckServiceIdentityExists(this.namespaceDesc, "Vandelay Industries"));
+            acsNamespace.SaveChanges(logInfo => Trace.WriteLine(logInfo.Message));
         }
 
-        [TestMethod]
-        public void AddMyCoolWebsiteRelyingParty()
-        {
-            var acsNamespace = new AcsNamespace(this.namespaceDesc);
-            acsNamespace.AddRelyingParty(
-                rp => rp
-                    .Name("MyCoolWebsite")
-                    .RealmAddress("http://mycoolwebsite.com/")
-                    .ReplyAddress("http://mycoolwebsite.com/")
-                    .AllowGoogleIdentityProvider()
-                    .AllowWindowsLiveIdentityProvider());
-
-            acsNamespace.SaveChanges();
-
-            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "MyCoolWebsite"));
-        }
-
-        [TestMethod]
         public void AddMyCoolWebsiteRelyingPartyWithSwtTokenDetails()
         {
             var acsNamespace = new AcsNamespace(this.namespaceDesc);
@@ -78,13 +46,9 @@
                     .TokenLifetime(120)
                     .SymmetricKey(Convert.FromBase64String("yMryA5VQVmMwrtuiJBfyjMnAJwoT7//fCuM6NwaHjQ1=")));
 
-            acsNamespace.SaveChanges();
-
-            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "MyCoolWebsite"));
-            Assert.IsTrue(AcsHelper.CheckRelyingPartyHasKeys(this.namespaceDesc, "MyCoolWebsite", 1));
+            acsNamespace.SaveChanges(logInfo => Trace.WriteLine(logInfo.Message));
         }
 
-        [TestMethod]
         public void AddMyCoolWebsiteRelyingPartyWithSamlTokenDetails()
         {
             var encryptionCert = new X509Certificate(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testCert.cer"));
@@ -106,33 +70,9 @@
                     .SigningCertificate(sc => sc.Bytes(signingCertBytes).Password("xyz").StartDate(startDate).EndDate(endDate)) 
                     .EncryptionCertificate(encryptionCert.GetRawCertData()));
 
-            acsNamespace.SaveChanges();
-
-            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "MyCoolWebsite"));
-            Assert.IsTrue(AcsHelper.CheckRelyingPartyHasKeys(this.namespaceDesc, "MyCoolWebsite", 2));
+            acsNamespace.SaveChanges(logInfo => Trace.WriteLine(logInfo.Message));
         }
 
-        [TestMethod]
-        public void AddMyCoolWebsiteRelyingPartyWithRuleGroup()
-        {
-            var acsNamespace = new AcsNamespace(this.namespaceDesc);
-            acsNamespace.AddRelyingParty(
-                rp => rp
-                    .Name("MyCoolWebsite")
-                    .RealmAddress("http://mycoolwebsite.com/")
-                    .ReplyAddress("http://mycoolwebsite.com/")
-                    .AllowGoogleIdentityProvider()
-                    .AllowWindowsLiveIdentityProvider()
-                    .RemoveRelatedRuleGroups()
-                    .AddRuleGroup(rg => rg.Name("Rule Group for MyCoolWebsite Relying Party")));
-
-            acsNamespace.SaveChanges();
-
-            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "MyCoolWebsite"));
-            Assert.IsTrue(AcsHelper.CheckRuleGroupExists(this.namespaceDesc, "MyCoolWebsite", "Rule Group for MyCoolWebsite Relying Party"));
-        }
-
-        [TestMethod]
         public void AddMyCoolWebsiteRelyingPartyWithRuleGroupAndRules()
         {
             var acsNamespace = new AcsNamespace(this.namespaceDesc);
@@ -155,9 +95,9 @@
                                     rule => rule
                                         .Description("Google Passthrough")
                                         .IfInputClaimIssuer().Is("Google")
-                                        .AndInputClaimType().IsOfType(ClaimTypes.Email)
+                                        .AndInputClaimType().IsOfType("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")
                                         .AndInputClaimValue().IsAny()
-                                        .ThenOutputClaimType().ShouldBe(ClaimTypes.Name)
+                                        .ThenOutputClaimType().ShouldBe("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")
                                         .AndOutputClaimValue().ShouldPassthroughFirstInputClaimValue())
                                 .AddRule(
                                     rule => rule
@@ -171,9 +111,9 @@
                                     rule => rule
                                         .Description("Windows Live ID rule")
                                         .IfInputClaimIssuer().Is("Windows Live ID")
-                                        .AndInputClaimType().IsOfType(ClaimTypes.Email)
+                                        .AndInputClaimType().IsOfType("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")
                                         .AndInputClaimValue().Is("johndoe@hotmail.com")
-                                        .ThenOutputClaimType().ShouldBe(ClaimTypes.NameIdentifier)
+                                        .ThenOutputClaimType().ShouldBe("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
                                         .AndOutputClaimValue().ShouldBe("John Doe"))
                                 .AddRule(
                                     rule => rule
@@ -184,36 +124,7 @@
                                         .ThenOutputClaimType().ShouldPassthroughFirstInputClaimType()
                                         .AndOutputClaimValue().ShouldPassthroughFirstInputClaimValue())));
 
-            acsNamespace.SaveChanges();
-
-            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, MyCoolWebsite));
-            Assert.IsTrue(AcsHelper.CheckRuleGroupExists(this.namespaceDesc, MyCoolWebsite, RuleGroupForMyCoolWebsiteRelyingParty));
-            Assert.IsTrue(AcsHelper.CheckRuleGroupHasRules(this.namespaceDesc, MyCoolWebsite, RuleGroupForMyCoolWebsiteRelyingParty, 4));
-            Assert.IsTrue(AcsHelper.CheckRuleGroupHasRule(this.namespaceDesc, MyCoolWebsite, 
-                RuleGroupForMyCoolWebsiteRelyingParty, "Google Passthrough"));
-            Assert.IsTrue(AcsHelper.CheckRuleGroupHasRule(this.namespaceDesc, MyCoolWebsite, 
-                RuleGroupForMyCoolWebsiteRelyingParty, "Yahoo! Passthrough"));
-            Assert.IsTrue(AcsHelper.CheckRuleGroupHasRule(this.namespaceDesc, MyCoolWebsite, 
-                RuleGroupForMyCoolWebsiteRelyingParty, "Windows Live ID rule"));
-            Assert.IsTrue(AcsHelper.CheckRuleGroupHasRule(this.namespaceDesc, MyCoolWebsite, 
-                RuleGroupForMyCoolWebsiteRelyingParty, "ACS rule"));
-        }
-
-        [TestMethod]
-        public void AddMyCoolWebsiteLinkedToExistingRuleGroup()
-        {
-            var acsNamespace = new AcsNamespace(this.namespaceDesc);
-            acsNamespace.AddRelyingParty(
-                rp => rp
-                    .Name("MyCoolWebsite")
-                    .RealmAddress("http://mycoolwebsite.com/")
-                    .ReplyAddress("http://mycoolwebsite.com/")
-                    .AllowGoogleIdentityProvider()
-                    .LinkToRuleGroup("Rule Group for MyCoolWebsite Relying Party"));
-
-            acsNamespace.SaveChanges();
-
-            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "MyCoolWebsite"));
+            acsNamespace.SaveChanges(logInfo => Trace.WriteLine(logInfo.Message));
         }
 
         public byte[] ReadBytesFromPfxFile(string pfxFileName)
