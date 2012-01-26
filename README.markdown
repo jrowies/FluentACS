@@ -56,19 +56,19 @@ If you are developing a sample application, a spike or a POC, this API may come 
 	acsNamespace.SaveChanges(logInfo => Console.WriteLine(logInfo.Message));
 ```
 
-![Running](https://github.com/jrowies/FluentACS/raw/master/docs/Running.png)
+![Running](https://github.com/jrowies/FluentACS/raw/master/pics/Running.png)
 
 ### Where can I get it?
 
 You can include the NuGet packages ([FluentACS](https://nuget.org/packages/FluentACS) and [FluentACS.Samples](https://nuget.org/packages/FluentACS.Samples)) using the package manager in Visual Studio.
 
-![NuGet package manager](https://github.com/jrowies/FluentACS/raw/master/docs/PackageManager.png)
+![NuGet package manager](https://github.com/jrowies/FluentACS/raw/master/pics/PackageManager.png)
 
 Also, you can grab the source code from the [project repository](https://github.com/jrowies/FluentACS) on github.
 
 ### Is there more documentation available?
 
-There is no detailed documentation about the API, but given the fluent nature of the interface, it’s self-explaining and very straightforward to use. You can also take a look at the [tests](https://github.com/jrowies/FluentACS/blob/master/FluentACSTest/IntegrationTests.cs) !
+There is no detailed documentation about the API, but given the fluent nature of the interface, it's self-explaining and very straightforward to use. You can also take a look at the [tests](https://github.com/jrowies/FluentACS/blob/master/FluentACSTest/IntegrationTests.cs) !
 
 ### Can I use it for commercial purposes?
 
