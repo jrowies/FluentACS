@@ -1,6 +1,7 @@
 
 *.user
 *.suo
+*.ncrunchsolution
 /_ReSharper.FluentACS
 /FluentACS/_ReSharper.FluentACS
 /FluentACS/bin
