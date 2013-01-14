@@ -156,6 +156,12 @@
             return this;
         }
 
+        public RelyingPartySpec TokenLifetime(TimeSpan tokenLifetime)
+        {
+            this.tokenLifetime = Convert.ToInt32(tokenLifetime.TotalSeconds);
+            return this;
+        }
+
         internal IEnumerable<string> AllowedIdentityProviders()
         {
             return this.allowedIdentityProviders;
