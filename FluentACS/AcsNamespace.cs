@@ -34,6 +34,18 @@
             return this;
         }
 
+        public AcsNamespace AddFacebookIdentityProvider(Action<FacebookIdentityProviderSpec> configAction)
+        {
+            Guard.NotNull(() => configAction, configAction);
+
+            var spec = new FacebookIdentityProviderSpec();
+            configAction(spec);
+
+            this.commands.Add(new AddIdentityProviderCommand(spec));
+
+            return this;
+        }
+
         public AcsNamespace AddServiceIdentity(Action<ServiceIdentitySpec> configAction)
         {
             Guard.NotNull(() => configAction, configAction);

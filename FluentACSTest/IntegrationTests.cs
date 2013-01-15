@@ -19,6 +19,10 @@
             ConfigurationManager.AppSettings["acsUserName"],
             ConfigurationManager.AppSettings["acsPassword"]);
 
+        private readonly string facebookAppId = ConfigurationManager.AppSettings["facebookAppId"];
+
+        private readonly string facebookAppSecret = ConfigurationManager.AppSettings["facebookAppSecret"];
+
         [TestMethod]
         public void AddGoogleAndYahooIdentityProviders()
         {
@@ -31,6 +35,22 @@
 
             Assert.IsTrue(AcsHelper.CheckIdentityProviderExists(this.namespaceDesc, "Google"));
             Assert.IsTrue(AcsHelper.CheckIdentityProviderExists(this.namespaceDesc, "Yahoo!"));
+        }
+
+        [TestMethod]
+        public void AddFacebookIdentityProvider()
+        {
+            var acsNamespace = new AcsNamespace(this.namespaceDesc);
+            acsNamespace
+                .AddFacebookIdentityProvider(
+                    ip => ip
+                        .AppId(facebookAppId)
+                        .AppSecret(facebookAppSecret)
+                );
+
+            acsNamespace.SaveChanges(logInfo => Trace.WriteLine(logInfo.Message));
+
+            Assert.IsTrue(AcsHelper.CheckIdentityProviderExists(this.namespaceDesc, "Facebook"));
         }
 
         [TestMethod]
@@ -236,6 +256,8 @@
             Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "MyCoolWebsite"));
         }
 
+        #region Helpers
+
         public byte[] ReadBytesFromPfxFile(string pfxFileName)
         {
             byte[] signingCertificate;
@@ -249,5 +271,7 @@
 
             return signingCertificate;
         }
+
+        #endregion
     }
 }
