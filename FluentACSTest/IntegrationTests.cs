@@ -48,6 +48,25 @@
         }
 
         [TestMethod]
+        public void AddVandelayIndustriesServiceIdentityWithX509()
+        {
+            var encryptionCert = new X509Certificate(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testCert.cer"));
+            var acsNamespace = new AcsNamespace(namespaceDesc);
+            var name = "Vandelay Industries X509";
+
+            acsNamespace.AddServiceIdentityWithX509Certificate(
+                si => si
+                    .Name(name)
+                    .EncryptionCertificate(encryptionCert.GetRawCertData())
+                    .StartDate(DateTime.Parse(encryptionCert.GetEffectiveDateString()))
+                    .EndDate(DateTime.Parse(encryptionCert.GetExpirationDateString())));
+
+            acsNamespace.SaveChanges(logInfo => Trace.WriteLine(logInfo.Message));
+
+            Assert.IsTrue(AcsHelper.CheckServiceIdentityExists(this.namespaceDesc, name));
+        }
+
+        [TestMethod]
         public void AddMyCoolWebsiteRelyingParty()
         {
             var acsNamespace = new AcsNamespace(this.namespaceDesc);

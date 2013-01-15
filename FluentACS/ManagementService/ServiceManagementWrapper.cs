@@ -20,7 +20,6 @@ namespace FluentACS.ManagementService
         private readonly string serviceIdentityUsernameForManagement;
         private readonly string serviceNamespace;
         private static string cachedSwtToken;
-        //private ManagementService managementService;
 
         public ServiceManagementWrapper(string serviceNamespace, string serviceIdentityUsernameForManagement, string serviceIdentityPasswordForManagement)
         {
@@ -1080,6 +1079,36 @@ namespace FluentACS.ManagementService
             }
         }
 
+        public void AddServiceIdentityWithCertificate(string name, byte[] encryptionCert, DateTime startdate, DateTime enddate)
+        {
+            try
+            {
+                var client = CreateManagementServiceClient();
+                var serviceIdentity = new ServiceIdentity
+                {
+                    Name = name
+                };
+
+                client.AddToServiceIdentities(serviceIdentity);
+
+                var serviceIdentityKey = new ServiceIdentityKey
+                {
+                    DisplayName = "Credentials for " + name,
+                    Type = IdentityKeyTypes.X509Certificate.ToString(),
+                    Usage = IdentityKeyUsages.Signing.ToString(),
+                    Value = encryptionCert,
+                    StartDate = startdate,
+                    EndDate = enddate
+                };
+
+                client.AddRelatedObject(serviceIdentity, "ServiceIdentityKeys", serviceIdentityKey);
+                client.SaveChanges(SaveChangesOptions.Batch);
+            }
+            catch (Exception ex)
+            {
+                throw TryGetExceptionDetails(ex);
+            }
+        }
 
         [DataContract]
         private class OAuth2TokenResponse

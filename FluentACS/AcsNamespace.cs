@@ -46,6 +46,18 @@
             return this;
         }
 
+        public AcsNamespace AddServiceIdentityWithX509Certificate(Action<ServiceIdentityWithX509CertificateSpec> configAction)
+        {
+            Guard.NotNull(() => configAction, configAction);
+
+            var spec = new ServiceIdentityWithX509CertificateSpec();
+            configAction(spec);
+
+            this.commands.Add(new AddServiceIdentityWithX509CertificateCommand(spec));
+
+            return this;
+        }
+
         public AcsNamespace AddRelyingParty(Action<RelyingPartySpec> configAction)
         {
             Guard.NotNull(() => configAction, configAction);

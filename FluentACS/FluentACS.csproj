@@ -51,6 +51,7 @@
     <Compile Include="Commands\AddRuleCommand.cs" />
     <Compile Include="Commands\AddRuleGroupCommand.cs" />
     <Compile Include="Commands\AddServiceIdentityCommand.cs" />
+    <Compile Include="Commands\AddServiceIdentityWithX509CertificateCommand.cs" />
     <Compile Include="Commands\BaseCommand.cs" />
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Logging\LogInfo.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="Specs\Rules\OutputClaimTypeSpec.cs" />
     <Compile Include="Specs\Rules\OutputClaimValueSpec.cs" />
     <Compile Include="Specs\Rules\RuleSpec.cs" />
+    <Compile Include="Specs\ServiceIdentityWithX509CertificateSpec.cs" />
     <Compile Include="Specs\ServiceIdentitySpec.cs" />
     <Compile Include="Specs\SigningCertificateSpec.cs" />
     <Compile Include="Specs\YahooIdentityProviderSpec.cs" />
