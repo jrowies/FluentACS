@@ -30,6 +30,11 @@ namespace FluentACS.ManagementService
 
         public Issuer AddFacebookIdentityProvider(string displayName, string facebookAppId, string facebookAppSecret)
         {
+            return AddFacebookIdentityProvider(displayName, facebookAppId, facebookAppSecret, new [] { "email" });
+        }
+
+        public Issuer AddFacebookIdentityProvider(string displayName, string facebookAppId, string facebookAppSecret, string[] loginParameters)
+        {
             try
             {
                 var client = this.CreateManagementServiceClient();
@@ -46,7 +51,7 @@ namespace FluentACS.ManagementService
                                    {
                                        DisplayName = displayName, 
                                        LoginLinkName = "Facebook", 
-                                       LoginParameters = "email", 
+                                       LoginParameters = String.Join(",", loginParameters), 
                                        WebSSOProtocolType = WebSSOProtocolType.Facebook.ToString(), 
                                        IssuerId = issuer.Id
                                    };
