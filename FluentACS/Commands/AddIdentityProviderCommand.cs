@@ -56,7 +56,8 @@
                 this.LogMessage(logAction, string.Format("Adding Identity Provider '{0}'", facebookIdentityProviderSpec.DisplayName()));
                 acsWrapper.AddFacebookIdentityProvider(facebookIdentityProviderSpec.DisplayName(),
                     facebookIdentityProviderSpec.AppId(), 
-                    facebookIdentityProviderSpec.AppSecret());
+                    facebookIdentityProviderSpec.AppSecret(),
+                    facebookIdentityProviderSpec.ApplicationPermissions());
                 this.LogSavingChangesMessage(logAction);
             }
         }

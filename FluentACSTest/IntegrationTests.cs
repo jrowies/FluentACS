@@ -10,6 +10,7 @@
 
     using Microsoft.IdentityModel.Claims;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using FluentACS.Specs;
 
     [TestClass]
     public class IntegrationTests
@@ -46,6 +47,24 @@
                     ip => ip
                         .AppId(facebookAppId)
                         .AppSecret(facebookAppSecret)
+                );
+
+            acsNamespace.SaveChanges(logInfo => Trace.WriteLine(logInfo.Message));
+
+            Assert.IsTrue(AcsHelper.CheckIdentityProviderExists(this.namespaceDesc, "Facebook"));
+        }
+
+        [TestMethod]
+        public void AddFacebookIdentityProviderWithAdditionalPermissions()
+        {
+            var acsNamespace = new AcsNamespace(this.namespaceDesc);
+            acsNamespace
+                .AddFacebookIdentityProvider(
+                    ip => ip
+                        .AppId(facebookAppId)
+                        .AppSecret(facebookAppSecret)
+                        .WithApplicationPermission(FacebookApplicationPermission.UserPhotos)
+                        .WithApplicationPermission(FacebookApplicationPermission.PublishStream)
                 );
 
             acsNamespace.SaveChanges(logInfo => Trace.WriteLine(logInfo.Message));

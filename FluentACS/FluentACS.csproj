@@ -77,6 +77,7 @@
       <DependentUpon>Reference.datasvcmap</DependentUpon>
     </Compile>
     <Compile Include="Specs\BaseSpec.cs" />
+    <Compile Include="Specs\FacebookApplicationPermission.cs" />
     <Compile Include="Specs\FacebookIdentityProviderSpec.cs" />
     <Compile Include="Specs\GoogleIdentityProviderSpec.cs" />
     <Compile Include="Specs\IdentityProviderConsts.cs" />
