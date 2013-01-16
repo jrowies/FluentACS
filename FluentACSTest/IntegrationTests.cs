@@ -87,6 +87,7 @@
         }
 
         [TestMethod]
+        [DeploymentItem("testCert.cer")]
         public void AddVandelayIndustriesServiceIdentityWithX509()
         {
             var encryptionCert = new X509Certificate(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testCert.cer"));
@@ -106,6 +107,7 @@
         }
 
         [TestMethod]
+        [DeploymentItem("testCert.cer")]
         public void AddVandelayIndustriesServiceIdentityWithX509FromFile()
         {
             var encryptionCert = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testCert.cer");
@@ -175,6 +177,8 @@
         }
 
         [TestMethod]
+        [DeploymentItem("testCert_xyz.pfx")]
+        [DeploymentItem("testCert.cer")]
         public void AddMyCoolWebsiteRelyingPartyWithSamlTokenDetails()
         {
             var encryptionCert = new X509Certificate(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testCert.cer"));
