@@ -20,6 +20,12 @@
 
         public override void Execute(object receiver, Action<LogInfo> logAction)
         {
+            // AddIdentityProviderCommand has branches for each of
+            // the spec types. At present this is at the limit of its
+            // scalability;
+            
+            // TODO: consider refactoring to reduce the cyclomatic complexity of the Execute method.
+
             var acsWrapper = (ServiceManagementWrapper)receiver;
 
             var idpToRemove = acsWrapper.RetrieveIdentityProviders().Where(idp => idp.DisplayName.Equals(this.identityProviderSpec.DisplayName())).SingleOrDefault();
