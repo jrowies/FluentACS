@@ -43,6 +43,16 @@
                 acsWrapper.AddYahooIdentityProvider();
                 this.LogSavingChangesMessage(logAction);
             }
+
+            if (this.identityProviderSpec is FacebookIdentityProviderSpec)
+            {
+                var facebookIdentityProviderSpec = (FacebookIdentityProviderSpec)identityProviderSpec;
+                this.LogMessage(logAction, string.Format("Adding Identity Provider '{0}'", facebookIdentityProviderSpec.DisplayName()));
+                acsWrapper.AddFacebookIdentityProvider(facebookIdentityProviderSpec.DisplayName(),
+                    facebookIdentityProviderSpec.AppId(), 
+                    facebookIdentityProviderSpec.AppSecret());
+                this.LogSavingChangesMessage(logAction);
+            }
         }
     }
 }
