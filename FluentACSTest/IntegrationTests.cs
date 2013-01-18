@@ -90,16 +90,15 @@
         [DeploymentItem("testCert.cer")]
         public void AddVandelayIndustriesServiceIdentityWithX509()
         {
-            var encryptionCert = new X509Certificate(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testCert.cer"));
+            var encryptionCert = new X509Certificate2(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testCert.cer"));
             var acsNamespace = new AcsNamespace(namespaceDesc);
             var name = "Vandelay Industries X509";
 
             acsNamespace.AddServiceIdentityWithX509Certificate(
                 si => si
                     .Name(name)
-                    .EncryptionCertificate(encryptionCert.GetRawCertData())
-                    .StartDate(DateTime.Parse(encryptionCert.GetEffectiveDateString()))
-                    .EndDate(DateTime.Parse(encryptionCert.GetExpirationDateString())));
+                    .EncryptionCertificate(encryptionCert)
+                );
 
             acsNamespace.SaveChanges(logInfo => Trace.WriteLine(logInfo.Message));
 

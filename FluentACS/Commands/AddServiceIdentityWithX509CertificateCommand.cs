@@ -22,7 +22,7 @@ namespace FluentACS.Commands
         {
             var acsWrapper = (ServiceManagementWrapper)receiver;
 
-            var sidToRemove = acsWrapper.RetrieveServiceIdentities().Where(si => si.Name.Equals(this.serviceIdentityWithX509Spec.Name())).SingleOrDefault();
+            var sidToRemove = acsWrapper.RetrieveServiceIdentities().SingleOrDefault(si => si.Name.Equals(this.serviceIdentityWithX509Spec.Name()));
             if (sidToRemove != null)
             {
                 this.LogMessage(logAction, string.Format("Removing Service Identity '{0}'", sidToRemove.Name));
@@ -31,7 +31,7 @@ namespace FluentACS.Commands
             }
 
             this.LogMessage(logAction, string.Format("Adding Service Identity '{0}'", this.serviceIdentityWithX509Spec.Name()));
-            acsWrapper.AddServiceIdentityWithCertificate(this.serviceIdentityWithX509Spec.Name(), this.serviceIdentityWithX509Spec.EncryptionCertificate(), this.serviceIdentityWithX509Spec.StartDate(), this.serviceIdentityWithX509Spec.EndDate());
+            acsWrapper.AddServiceIdentityWithCertificate(this.serviceIdentityWithX509Spec.Name(), this.serviceIdentityWithX509Spec.Certificates());
             this.LogSavingChangesMessage(logAction);
         }
     }

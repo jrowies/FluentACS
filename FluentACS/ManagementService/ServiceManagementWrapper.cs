@@ -14,6 +14,8 @@ using EntityDescriptor = Microsoft.IdentityModel.Protocols.WSFederation.Metadata
 
 namespace FluentACS.ManagementService
 {
+    using System.Security.Cryptography.X509Certificates;
+
     public class ServiceManagementWrapper
     {
         private readonly string serviceIdentityPasswordForManagement;
@@ -1084,7 +1086,12 @@ namespace FluentACS.ManagementService
             }
         }
 
-        public void AddServiceIdentityWithCertificate(string name, byte[] encryptionCert, DateTime startdate, DateTime enddate)
+        public void AddServiceIdentityWithCertificate(string name, X509Certificate2 certificate)
+        {
+            AddServiceIdentityWithCertificate(name, new [] { certificate });
+        }
+
+        public void AddServiceIdentityWithCertificate(string name, IEnumerable<X509Certificate2> certificates)
         {
             try
             {
@@ -1096,17 +1103,20 @@ namespace FluentACS.ManagementService
 
                 client.AddToServiceIdentities(serviceIdentity);
 
-                var serviceIdentityKey = new ServiceIdentityKey
+                foreach (var certificate in certificates)
                 {
-                    DisplayName = "Credentials for " + name,
-                    Type = IdentityKeyTypes.X509Certificate.ToString(),
-                    Usage = IdentityKeyUsages.Signing.ToString(),
-                    Value = encryptionCert,
-                    StartDate = startdate,
-                    EndDate = enddate
-                };
+                    var serviceIdentityKey = new ServiceIdentityKey
+                                                 {
+                                                     DisplayName = "Credentials for " + name,
+                                                     Type = IdentityKeyTypes.X509Certificate.ToString(),
+                                                     Usage = IdentityKeyUsages.Signing.ToString(),
+                                                     Value = certificate.GetRawCertData(),
+                                                     StartDate = certificate.NotBefore,
+                                                     EndDate = certificate.NotAfter
+                                                 };
 
-                client.AddRelatedObject(serviceIdentity, "ServiceIdentityKeys", serviceIdentityKey);
+                    client.AddRelatedObject(serviceIdentity, "ServiceIdentityKeys", serviceIdentityKey);
+                }
                 client.SaveChanges(SaveChangesOptions.Batch);
             }
             catch (Exception ex)
