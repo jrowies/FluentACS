@@ -35,15 +35,10 @@ namespace FluentACS.Specs
             return this.EncryptionCertificate(new X509Certificate2(path));
         }
 
-        public ServiceIdentityWithX509CertificateSpec EncryptionCertificateIdentifiedBy(string thumbprint, StoreName storeName, StoreLocation storeLocation)
+        public ServiceIdentityWithX509CertificateSpec EncryptionCertificateIdentifiedBy(string thumbprint, StoreName storeName = StoreName.My, StoreLocation storeLocation = StoreLocation.CurrentUser)
         {
             var certificate = X509CertificateHelper.GetX509Certificate(thumbprint, storeName, storeLocation);
             return this.EncryptionCertificate(certificate);
-        }
-
-        public ServiceIdentityWithX509CertificateSpec EncryptionCertificateIdentifiedBy(string thumbprint)
-        {
-            return this.EncryptionCertificateIdentifiedBy(thumbprint, StoreName.My, StoreLocation.CurrentUser);
         }
 
         internal string Name()

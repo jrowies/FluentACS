@@ -92,12 +92,7 @@
             return this;
         }
 
-        public RelyingPartySpec EncryptionCertificateIdentifiedBy(string thumbprint)
-        {
-            return EncryptionCertificateIdentifiedBy(thumbprint, StoreName.My, StoreLocation.CurrentUser);
-        }
-
-        public RelyingPartySpec EncryptionCertificateIdentifiedBy(string thumbprint, StoreName storeName, StoreLocation storeLocation)
+        public RelyingPartySpec EncryptionCertificateIdentifiedBy(string thumbprint, StoreName storeName = StoreName.My, StoreLocation storeLocation = StoreLocation.CurrentUser)
         {
             Guard.NotNullOrEmpty(() => thumbprint, thumbprint);
 
