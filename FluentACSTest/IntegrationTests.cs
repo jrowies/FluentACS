@@ -206,6 +206,29 @@
         }
 
         [TestMethod]
+        [DeploymentItem("testCert_xyz.pfx")]
+        [DeploymentItem("testCert.cer")]
+        public void AddMyCoolWebsiteRelyingPartyWithSamlTokenDetailsWithX509CertificateFromFile()
+        {
+            var encryptionCert = new X509Certificate(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testCert.cer"));
+            var temp = new X509Certificate2(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testCert_xyz.pfx"), "xyz");
+
+            var acsNamespace = new AcsNamespace(this.namespaceDesc);
+            acsNamespace.AddRelyingParty(
+                rp => rp
+                    .Name("MyCoolWebsite with X509")
+                    .RealmAddress("http://mycoolwebsitewithx509.com/")
+                    .ReplyAddress("http://mycoolwebsitewithx509.com/")
+                    .AllowGoogleIdentityProvider()
+                    .EncryptionCertificate(encryptionCert));
+
+            acsNamespace.SaveChanges();
+
+            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "MyCoolWebsite with X509"));
+            Assert.IsTrue(AcsHelper.CheckRelyingPartyHasKeys(this.namespaceDesc, "MyCoolWebsite with X509", 1));
+        }
+
+        [TestMethod]
         public void AddMyCoolWebsiteRelyingPartyWithRuleGroup()
         {
             var acsNamespace = new AcsNamespace(this.namespaceDesc);

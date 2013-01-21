@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Security.Cryptography.X509Certificates;
 
     using FluentACS.Commands;
     using FluentACS.ManagementService;
@@ -80,6 +81,14 @@
             Guard.NotNull(() => encryptionCert, encryptionCert);
 
             this.encryptionCert = encryptionCert;
+            return this;
+        }
+        
+        public RelyingPartySpec EncryptionCertificate(X509Certificate encryptionCert)
+        {
+            Guard.NotNull(() => encryptionCert, encryptionCert);
+
+            this.encryptionCert = encryptionCert.GetRawCertData();
             return this;
         }
 
