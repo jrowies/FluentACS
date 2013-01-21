@@ -51,6 +51,7 @@
     <Compile Include="Commands\AddRuleCommand.cs" />
     <Compile Include="Commands\AddRuleGroupCommand.cs" />
     <Compile Include="Commands\AddServiceIdentityCommand.cs" />
+    <Compile Include="Commands\AddServiceIdentityWithX509CertificateCommand.cs" />
     <Compile Include="Commands\BaseCommand.cs" />
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Logging\LogInfo.cs" />
@@ -76,6 +77,8 @@
       <DependentUpon>Reference.datasvcmap</DependentUpon>
     </Compile>
     <Compile Include="Specs\BaseSpec.cs" />
+    <Compile Include="Specs\FacebookApplicationPermission.cs" />
+    <Compile Include="Specs\FacebookIdentityProviderSpec.cs" />
     <Compile Include="Specs\GoogleIdentityProviderSpec.cs" />
     <Compile Include="Specs\IdentityProviderConsts.cs" />
     <Compile Include="Specs\IdentityProviderSpec.cs" />
@@ -94,8 +97,10 @@
     <Compile Include="Specs\Rules\OutputClaimTypeSpec.cs" />
     <Compile Include="Specs\Rules\OutputClaimValueSpec.cs" />
     <Compile Include="Specs\Rules\RuleSpec.cs" />
+    <Compile Include="Specs\ServiceIdentityWithX509CertificateSpec.cs" />
     <Compile Include="Specs\ServiceIdentitySpec.cs" />
     <Compile Include="Specs\SigningCertificateSpec.cs" />
+    <Compile Include="Specs\X509CertificateHelper.cs" />
     <Compile Include="Specs\YahooIdentityProviderSpec.cs" />
   </ItemGroup>
   <ItemGroup>

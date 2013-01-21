@@ -34,6 +34,7 @@ namespace FluentACS
 {
     using System;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq.Expressions;
 
     /// <summary>
@@ -62,6 +63,12 @@ namespace FluentACS
             NotNull<string>(reference, value);
             if (value.Length == 0)
                 throw new ArgumentException(GetParameterName(reference), "Parameter cannot be empty.");
+        }
+
+        public static void FileExists(Expression<Func<string>> reference, string value)
+        {
+            if (!File.Exists(value))
+                throw new ArgumentException(GetParameterName(reference), "Parameter must be a path to an existing file.");                
         }
 
         private static string GetParameterName(Expression reference)

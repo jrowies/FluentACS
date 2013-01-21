@@ -7,5 +7,7 @@
         public const string Yahoo = "Yahoo!";
 
         public const string WindowsLive = "Windows Live ID";
+
+        public const string Facebook = "Facebook";
     }
 }

@@ -34,6 +34,18 @@
             return this;
         }
 
+        public AcsNamespace AddFacebookIdentityProvider(Action<FacebookIdentityProviderSpec> configAction)
+        {
+            Guard.NotNull(() => configAction, configAction);
+
+            var spec = new FacebookIdentityProviderSpec();
+            configAction(spec);
+
+            this.commands.Add(new AddIdentityProviderCommand(spec));
+
+            return this;
+        }
+
         public AcsNamespace AddServiceIdentity(Action<ServiceIdentitySpec> configAction)
         {
             Guard.NotNull(() => configAction, configAction);
@@ -42,6 +54,18 @@
             configAction(spec);
 
             this.commands.Add(new AddServiceIdentityCommand(spec));
+
+            return this;
+        }
+
+        public AcsNamespace AddServiceIdentityWithX509Certificate(Action<ServiceIdentityWithX509CertificateSpec> configAction)
+        {
+            Guard.NotNull(() => configAction, configAction);
+
+            var spec = new ServiceIdentityWithX509CertificateSpec();
+            configAction(spec);
+
+            this.commands.Add(new AddServiceIdentityWithX509CertificateCommand(spec));
 
             return this;
         }

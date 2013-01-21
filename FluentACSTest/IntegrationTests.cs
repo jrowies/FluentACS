@@ -10,6 +10,7 @@
 
     using Microsoft.IdentityModel.Claims;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using FluentACS.Specs;
 
     [TestClass]
     public class IntegrationTests
@@ -18,6 +19,10 @@
             ConfigurationManager.AppSettings["acsNamespace"],
             ConfigurationManager.AppSettings["acsUserName"],
             ConfigurationManager.AppSettings["acsPassword"]);
+
+        private readonly string facebookAppId = ConfigurationManager.AppSettings["facebookAppId"];
+
+        private readonly string facebookAppSecret = ConfigurationManager.AppSettings["facebookAppSecret"];
 
         [TestMethod]
         public void AddGoogleAndYahooIdentityProviders()
@@ -34,6 +39,40 @@
         }
 
         [TestMethod]
+        public void AddFacebookIdentityProvider()
+        {
+            var acsNamespace = new AcsNamespace(this.namespaceDesc);
+            acsNamespace
+                .AddFacebookIdentityProvider(
+                    ip => ip
+                        .AppId(facebookAppId)
+                        .AppSecret(facebookAppSecret)
+                );
+
+            acsNamespace.SaveChanges(logInfo => Trace.WriteLine(logInfo.Message));
+
+            Assert.IsTrue(AcsHelper.CheckIdentityProviderExists(this.namespaceDesc, "Facebook"));
+        }
+
+        [TestMethod]
+        public void AddFacebookIdentityProviderWithAdditionalPermissions()
+        {
+            var acsNamespace = new AcsNamespace(this.namespaceDesc);
+            acsNamespace
+                .AddFacebookIdentityProvider(
+                    ip => ip
+                        .AppId(facebookAppId)
+                        .AppSecret(facebookAppSecret)
+                        .WithApplicationPermission(FacebookApplicationPermission.UserPhotos)
+                        .WithApplicationPermission(FacebookApplicationPermission.PublishStream)
+                );
+
+            acsNamespace.SaveChanges(logInfo => Trace.WriteLine(logInfo.Message));
+
+            Assert.IsTrue(AcsHelper.CheckIdentityProviderExists(this.namespaceDesc, "Facebook"));
+        }
+
+        [TestMethod]
         public void AddVandelayIndustriesServiceIdentity()
         {
             var acsNamespace = new AcsNamespace(this.namespaceDesc);
@@ -45,6 +84,57 @@
             acsNamespace.SaveChanges();
 
             Assert.IsTrue(AcsHelper.CheckServiceIdentityExists(this.namespaceDesc, "Vandelay Industries"));
+        }
+
+        [TestMethod]
+        [DeploymentItem("testCert.cer")]
+        public void AddVandelayIndustriesServiceIdentityWithX509()
+        {
+            var encryptionCert = new X509Certificate2(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testCert.cer"));
+            var acsNamespace = new AcsNamespace(namespaceDesc);
+            var name = "Vandelay Industries X509";
+
+            acsNamespace.AddServiceIdentityWithX509Certificate(
+                si => si
+                    .Name(name)
+                    .EncryptionCertificate(encryptionCert)
+                );
+
+            acsNamespace.SaveChanges(logInfo => Trace.WriteLine(logInfo.Message));
+
+            Assert.IsTrue(AcsHelper.CheckServiceIdentityExists(this.namespaceDesc, name));
+        }
+
+        [TestMethod]
+        [DeploymentItem("testCert.cer")]
+        public void AddVandelayIndustriesServiceIdentityWithX509FromFile()
+        {
+            var encryptionCert = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testCert.cer");
+            var acsNamespace = new AcsNamespace(namespaceDesc);
+            var name = "Vandelay Industries X509";
+
+            acsNamespace.AddServiceIdentityWithX509Certificate(
+                si => si
+                    .Name(name).EncryptionCertificate(encryptionCert));
+
+            acsNamespace.SaveChanges(logInfo => Trace.WriteLine(logInfo.Message));
+
+            Assert.IsTrue(AcsHelper.CheckServiceIdentityExists(this.namespaceDesc, name));
+        }
+
+        [TestMethod]
+        public void AddVandelayIndustriesServiceIdentityWithX509FromStore()
+        {
+            var acsNamespace = new AcsNamespace(namespaceDesc);
+            var name = "Vandelay Industries X509";
+
+            acsNamespace.AddServiceIdentityWithX509Certificate(
+                si => si
+                    .Name(name).EncryptionCertificateIdentifiedBy(thumbprint: "66e0bc68570e30fba6207b1050ac72dc5b48cf47"));
+
+            acsNamespace.SaveChanges(logInfo => Trace.WriteLine(logInfo.Message));
+
+            Assert.IsTrue(AcsHelper.CheckServiceIdentityExists(this.namespaceDesc, name));
         }
 
         [TestMethod]
@@ -86,6 +176,8 @@
         }
 
         [TestMethod]
+        [DeploymentItem("testCert_xyz.pfx")]
+        [DeploymentItem("testCert.cer")]
         public void AddMyCoolWebsiteRelyingPartyWithSamlTokenDetails()
         {
             var encryptionCert = new X509Certificate(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testCert.cer"));
@@ -111,6 +203,46 @@
 
             Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "MyCoolWebsite"));
             Assert.IsTrue(AcsHelper.CheckRelyingPartyHasKeys(this.namespaceDesc, "MyCoolWebsite", 2));
+        }
+
+        [TestMethod]
+        [DeploymentItem("testCert.cer")]
+        public void AddMyCoolWebsiteRelyingPartyWithSamlTokenDetailsWithX509CertificateFromFile()
+        {
+            var encryptionCert = new X509Certificate(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "testCert.cer"));
+
+            var acsNamespace = new AcsNamespace(this.namespaceDesc);
+            acsNamespace.AddRelyingParty(
+                rp => rp
+                    .Name("MyCoolWebsite with X509")
+                    .RealmAddress("http://mycoolwebsitewithx509.com/")
+                    .ReplyAddress("http://mycoolwebsitewithx509.com/")
+                    .AllowGoogleIdentityProvider()
+                    .EncryptionCertificate(encryptionCert));
+
+            acsNamespace.SaveChanges();
+
+            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "MyCoolWebsite with X509"));
+            Assert.IsTrue(AcsHelper.CheckRelyingPartyHasKeys(this.namespaceDesc, "MyCoolWebsite with X509", 1));
+        }
+
+        [TestMethod]
+        [DeploymentItem("testCert.cer")]
+        public void AddMyCoolWebsiteRelyingPartyWithSamlTokenDetailsWithX509CertificateFromCertificateStore()
+        {
+            var acsNamespace = new AcsNamespace(this.namespaceDesc);
+            acsNamespace.AddRelyingParty(
+                rp => rp
+                    .Name("MyCoolWebsite with X509")
+                    .RealmAddress("http://mycoolwebsitewithx509.com/")
+                    .ReplyAddress("http://mycoolwebsitewithx509.com/")
+                    .AllowGoogleIdentityProvider()
+                    .EncryptionCertificateIdentifiedBy(thumbprint: "66e0bc68570e30fba6207b1050ac72dc5b48cf47"));
+
+            acsNamespace.SaveChanges();
+
+            Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "MyCoolWebsite with X509"));
+            Assert.IsTrue(AcsHelper.CheckRelyingPartyHasKeys(this.namespaceDesc, "MyCoolWebsite with X509", 1));
         }
 
         [TestMethod]
@@ -217,6 +349,8 @@
             Assert.IsTrue(AcsHelper.CheckRelyingPartyExists(this.namespaceDesc, "MyCoolWebsite"));
         }
 
+        #region Helpers
+
         public byte[] ReadBytesFromPfxFile(string pfxFileName)
         {
             byte[] signingCertificate;
@@ -230,5 +364,7 @@
 
             return signingCertificate;
         }
+
+        #endregion
     }
 }

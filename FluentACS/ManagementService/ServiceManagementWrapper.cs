@@ -14,13 +14,14 @@ using EntityDescriptor = Microsoft.IdentityModel.Protocols.WSFederation.Metadata
 
 namespace FluentACS.ManagementService
 {
+    using System.Security.Cryptography.X509Certificates;
+
     public class ServiceManagementWrapper
     {
         private readonly string serviceIdentityPasswordForManagement;
         private readonly string serviceIdentityUsernameForManagement;
         private readonly string serviceNamespace;
         private static string cachedSwtToken;
-        //private ManagementService managementService;
 
         public ServiceManagementWrapper(string serviceNamespace, string serviceIdentityUsernameForManagement, string serviceIdentityPasswordForManagement)
         {
@@ -30,6 +31,11 @@ namespace FluentACS.ManagementService
         }
 
         public Issuer AddFacebookIdentityProvider(string displayName, string facebookAppId, string facebookAppSecret)
+        {
+            return AddFacebookIdentityProvider(displayName, facebookAppId, facebookAppSecret, new [] { "email" });
+        }
+
+        public Issuer AddFacebookIdentityProvider(string displayName, string facebookAppId, string facebookAppSecret, string[] loginParameters)
         {
             try
             {
@@ -47,7 +53,7 @@ namespace FluentACS.ManagementService
                                    {
                                        DisplayName = displayName, 
                                        LoginLinkName = "Facebook", 
-                                       LoginParameters = "email", 
+                                       LoginParameters = String.Join(",", loginParameters), 
                                        WebSSOProtocolType = WebSSOProtocolType.Facebook.ToString(), 
                                        IssuerId = issuer.Id
                                    };
@@ -1080,6 +1086,44 @@ namespace FluentACS.ManagementService
             }
         }
 
+        public void AddServiceIdentityWithCertificate(string name, X509Certificate2 certificate)
+        {
+            AddServiceIdentityWithCertificate(name, new [] { certificate });
+        }
+
+        public void AddServiceIdentityWithCertificate(string name, IEnumerable<X509Certificate2> certificates)
+        {
+            try
+            {
+                var client = CreateManagementServiceClient();
+                var serviceIdentity = new ServiceIdentity
+                {
+                    Name = name
+                };
+
+                client.AddToServiceIdentities(serviceIdentity);
+
+                foreach (var certificate in certificates)
+                {
+                    var serviceIdentityKey = new ServiceIdentityKey
+                                                 {
+                                                     DisplayName = "Credentials for " + name,
+                                                     Type = IdentityKeyTypes.X509Certificate.ToString(),
+                                                     Usage = IdentityKeyUsages.Signing.ToString(),
+                                                     Value = certificate.GetRawCertData(),
+                                                     StartDate = certificate.NotBefore,
+                                                     EndDate = certificate.NotAfter
+                                                 };
+
+                    client.AddRelatedObject(serviceIdentity, "ServiceIdentityKeys", serviceIdentityKey);
+                }
+                client.SaveChanges(SaveChangesOptions.Batch);
+            }
+            catch (Exception ex)
+            {
+                throw TryGetExceptionDetails(ex);
+            }
+        }
 
         [DataContract]
         private class OAuth2TokenResponse

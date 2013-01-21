@@ -2,6 +2,7 @@
 *.user
 *.suo
 *.ncrunchsolution
+*.DotSettings
 /_ReSharper.FluentACS
 /FluentACS/_ReSharper.FluentACS
 /FluentACS/bin
@@ -14,3 +15,4 @@
 /SampleApp/obj
 /SampleApp/app.config.private
 /SampleApp/app.config.repo
+/TestResults
