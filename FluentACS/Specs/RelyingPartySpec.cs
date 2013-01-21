@@ -92,6 +92,21 @@
             return this;
         }
 
+        public RelyingPartySpec EncryptionCertificateIdentifiedBy(string thumbprint)
+        {
+            return EncryptionCertificateIdentifiedBy(thumbprint, StoreName.My, StoreLocation.CurrentUser);
+        }
+
+        public RelyingPartySpec EncryptionCertificateIdentifiedBy(string thumbprint, StoreName storeName, StoreLocation storeLocation)
+        {
+            Guard.NotNullOrEmpty(() => thumbprint, thumbprint);
+
+            var certificate = X509CertificateHelper.GetX509Certificate(thumbprint, storeName, storeLocation);
+
+            this.encryptionCert = certificate.GetRawCertData();
+            return this;
+        }
+
         public RelyingPartySpec LinkToRuleGroup(string ruleGroupName)
         {
             Guard.NotNullOrEmpty(() => ruleGroupName, ruleGroupName);
@@ -230,5 +245,6 @@
         {
             return this.tokenLifetime;
         }
+
     }
 }

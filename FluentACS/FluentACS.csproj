@@ -100,6 +100,7 @@
     <Compile Include="Specs\ServiceIdentityWithX509CertificateSpec.cs" />
     <Compile Include="Specs\ServiceIdentitySpec.cs" />
     <Compile Include="Specs\SigningCertificateSpec.cs" />
+    <Compile Include="Specs\X509CertificateHelper.cs" />
     <Compile Include="Specs\YahooIdentityProviderSpec.cs" />
   </ItemGroup>
   <ItemGroup>

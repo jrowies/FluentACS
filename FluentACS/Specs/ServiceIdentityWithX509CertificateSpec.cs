@@ -37,14 +37,8 @@ namespace FluentACS.Specs
 
         public ServiceIdentityWithX509CertificateSpec EncryptionCertificateIdentifiedBy(string thumbprint, StoreName storeName, StoreLocation storeLocation)
         {
-            var store = new X509Store(storeName, storeLocation);
-            store.Open(OpenFlags.ReadOnly);
-            var certificates = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, validOnly: false);
-
-            if (certificates.Count == 0)
-                throw new ArgumentException(string.Format("Thumbprint {0} was not found in {1}//{2}", thumbprint, storeLocation, storeName), "thumbprint");
-
-            return this.EncryptionCertificate(certificates[0]);
+            var certificate = X509CertificateHelper.GetX509Certificate(thumbprint, storeName, storeLocation);
+            return this.EncryptionCertificate(certificate);
         }
 
         public ServiceIdentityWithX509CertificateSpec EncryptionCertificateIdentifiedBy(string thumbprint)
