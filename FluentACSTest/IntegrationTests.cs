@@ -206,7 +206,6 @@
         }
 
         [TestMethod]
-        [DeploymentItem("testCert_xyz.pfx")]
         [DeploymentItem("testCert.cer")]
         public void AddMyCoolWebsiteRelyingPartyWithSamlTokenDetailsWithX509CertificateFromFile()
         {
